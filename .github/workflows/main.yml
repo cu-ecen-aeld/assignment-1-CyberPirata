@@ -19,12 +19,20 @@ jobs:
       - name: Checkout submodules
         run: git submodule update --init --recursive
 
-      - name: Set execute permission for unit test
-        run: chmod +x ./unit-test.sh
+      - name: Grant executable permissions
+        run: chmod -R +x .
+
+      - name: Clean build directory
+        run: rm -rf ./build
+
+      - name: Configure project
+        run: cmake -S . -B build
+
+      - name: Build project
+        run: cmake --build build
 
       - name: Run unit test
         run: ./unit-test.sh
-
   full-test:
     runs-on: self-hosted
     container:
@@ -36,8 +44,18 @@ jobs:
       - name: Checkout submodules
         run: git submodule update --init --recursive
 
-      - name: Set execute permission for full test
-        run: chmod +x ./full-test.sh
+      - name: Grant executable permissions
+        run: chmod -R +x .
+
+      - name: Clean build directory
+        run: rm -rf ./build
+
+      - name: Configure project
+        run: cmake -S . -B build
+
+      - name: Build project
+        run: cmake --build build
 
       - name: Run full test
         run: ./full-test.sh
+
