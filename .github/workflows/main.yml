@@ -8,32 +8,7 @@ on:
       - '*'
 
 jobs:
-  docker-setup:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Ensure Docker is installed
-        run: |
-          if ! command -v docker &> /dev/null; then
-            echo "Docker is not installed. Installing Docker..."
-            sudo apt-get update
-            sudo apt-get install -y docker.io
-          else
-            echo "Docker is already installed."
-          fi
-
-      - name: Start Docker daemon
-        run: |
-          if ! systemctl is-active --quiet docker; then
-            echo "Starting Docker daemon..."
-            sudo systemctl start docker
-          fi
-          sudo systemctl enable docker
-
-      - name: Verify Docker status
-        run: docker version --format '{{.Server.APIVersion}}'
-
   unit-test:
-    needs: docker-setup
     runs-on: self-hosted
     container:
       image: cuaesd/aesd-autotest:24-unit-test
@@ -48,7 +23,6 @@ jobs:
         run: ./unit-test.sh
 
   full-test:
-    needs: docker-setup
     runs-on: self-hosted
     container:
       image: cuaesd/aesd-autotest:24-assignment2
