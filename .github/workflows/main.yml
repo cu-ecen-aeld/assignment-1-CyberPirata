@@ -1,20 +1,17 @@
 name: assignment-test
+
 on:
-    push:
-        tags-ignore:
-            - '*'
-        branches:
-            - '*'
+  push:
+    tags-ignore:
+      - '*'
+    branches:
+      - '*'
+
 jobs:
-docker-setup:
+  docker-setup:
     runs-on: ubuntu-latest
     steps:
-      # Step 1: Checkout the repository
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      # Step 2: Ensure Docker is installed
-      - name: Check Docker installation
+      - name: Ensure Docker is installed
         run: |
           if ! command -v docker &> /dev/null; then
             echo "Docker is not installed. Installing Docker..."
@@ -24,7 +21,6 @@ docker-setup:
             echo "Docker is already installed."
           fi
 
-      # Step 3: Start Docker daemon
       - name: Start Docker daemon
         run: |
           if ! systemctl is-active --quiet docker; then
@@ -33,31 +29,35 @@ docker-setup:
           fi
           sudo systemctl enable docker
 
-      # Step 4: Verify Docker status
       - name: Verify Docker status
-        run: |
-          sudo systemctl status docker
-          docker info
+        run: docker version --format '{{.Server.APIVersion}}'
 
-      # Step 5: Run your specific Docker command
-      - name: Run Docker version check
-        run: |
-          docker version --format '{{.Server.APIVersion}}'
-    unit-test:
-        container: cuaesd/aesd-autotest:24-unit-test
-        runs-on: self-hosted
-        steps:
-          - uses: actions/checkout@v2
-          - name: Checkout submodules
-            run : git submodule update --init --recursive
-          - name: Run unit test
-            run: ./unit-test.sh
-    full-test:
-        container: cuaesd/aesd-autotest:24-assignment2
-        runs-on: self-hosted
-        steps:
-          - uses: actions/checkout@v2
-          - name: Checkout submodules
-            run : git submodule update --init --recursive
-          - name: Run full test
-            run: ./full-test.sh
+  unit-test:
+    needs: docker-setup
+    runs-on: self-hosted
+    container:
+      image: cuaesd/aesd-autotest:24-unit-test
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Checkout submodules
+        run: git submodule update --init --recursive
+
+      - name: Run unit test
+        run: ./unit-test.sh
+
+  full-test:
+    needs: docker-setup
+    runs-on: self-hosted
+    container:
+      image: cuaesd/aesd-autotest:24-assignment2
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Checkout submodules
+        run: git submodule update --init --recursive
+
+      - name: Run full test
+        run: ./full-test.sh
