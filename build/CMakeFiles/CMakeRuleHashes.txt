@@ -1,0 +1,2 @@
+# Hashes of file build rules.
+15386fa72e214509983a367231caadea /home/piratage/Coursera/Assignment_1/assignment-1-CyberPirata/assignment-autotest/test/assignment1/Test_hello_Runner.c
