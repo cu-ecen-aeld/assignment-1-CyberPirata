@@ -19,6 +19,9 @@ jobs:
       - name: Checkout submodules
         run: git submodule update --init --recursive
 
+      - name: Set execute permission for unit test
+        run: chmod +x ./unit-test.sh
+
       - name: Run unit test
         run: ./unit-test.sh
 
@@ -32,6 +35,9 @@ jobs:
 
       - name: Checkout submodules
         run: git submodule update --init --recursive
+
+      - name: Set execute permission for full test
+        run: chmod +x ./full-test.sh
 
       - name: Run full test
         run: ./full-test.sh
